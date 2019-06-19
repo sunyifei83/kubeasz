@@ -1,14 +1,23 @@
 [Unit]
-Description=HAProxy Load Balancer
-After=syslog.target network.target
+Description=haproxy
+Documentation=https://github.com/docker-library/haproxy
+After=docker.service
+Requires=docker.service
 
 [Service]
-EnvironmentFile=/etc/sysconfig/haproxy
-ExecStartPre=/usr/bin/mkdir -p /run/haproxy
-ExecStart=/usr/sbin/haproxy-systemd-wrapper -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid $OPTIONS
-ExecReload=/bin/kill -USR2 $MAINPID
-KillMode=mixed
+User=root
+ExecStart={{ bin_dir }}/docker run \
+  --name haproxy \
+  --publish 127.0.0.1:6443:6443 \
+  --volume /etc/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg \
+  docker.io/library/haproxy:{{ HAPROXY_TAG }}
+ExecStop={{ bin_dir }}/docker rm -f haproxy
+ExecReload={{ bin_dir }}/docker kill -s HUP haproxy
 Restart=always
+RestartSec=10
+Delegate=yes
+LimitNOFILE=50000
+LimitNPROC=50000
 
 [Install]
 WantedBy=multi-user.target
