@@ -30,7 +30,7 @@ function install_docker() {
     echo "[INFO] docker binaries already existed"
   else
     echo -e "[INFO] \033[33mdownloading docker binaries\033[0m $DOCKER_VER"
-    curl -C -O "$DOCKER_URL" || { echo "[ERROR] downloading docker failed"; exit 1; }
+    curl -C- -O --retry 3 "$DOCKER_URL" || { echo "[ERROR] downloading docker failed"; exit 1; }
   fi
 
   tar zxf ./docker-${DOCKER_VER}.tgz -C /etc/ansible/down && \
