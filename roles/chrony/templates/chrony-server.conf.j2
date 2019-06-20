@@ -1,0 +1,30 @@
+# Use public servers from the pool.ntp.org project.
+{% for HOST in ntp_servers %}
+server {{ HOST }} iburst
+{% endfor %}
+pool pool.ntp.org iburst
+
+# Ignor source level
+stratumweight 0
+
+# Record the rate at which the system clock gains/losses time.
+driftfile /var/lib/chrony/drift
+
+# Allow the system clock to be stepped in the first five updates
+# if its offset is larger than 1 second.
+makestep 1 5
+
+# Enable kernel synchronization of the real-time clock (RTC).
+rtcsync
+
+# Allow NTP client access from local network.
+allow {{ local_network }}
+
+# Serve time even if not synchronized to a time source.
+local stratum 10
+
+# Select which information is logged.
+#log measurements statistics tracking
+
+#
+noclientlog
