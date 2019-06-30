@@ -1,6 +1,9 @@
 global
-        log stdout format raw local1 notice
-        maxconn 50000
+        log /dev/log    local1 warning
+        chroot /var/lib/haproxy
+        user haproxy
+        group haproxy
+        daemon
         nbproc 1
 
 defaults

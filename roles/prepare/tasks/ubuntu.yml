@@ -1,13 +1,13 @@
 # 删除默认安装
 - name: 删除ubuntu默认安装
-  apt: 
-    name: 
-      - ufw
-      - lxd
-      - lxd-client
-      - lxcfs
-      - lxc-common
-    state: absent
+  shell: "apt remove -y {{ item }}"
+  with_items:
+    - ufw
+    - lxd
+    - lxd-client
+    - lxcfs
+    - lxc-common
+  ignore_errors: true
 
 # Ubuntu 安装基础软件包
 - name: 安装 ubuntu基础软件
@@ -22,6 +22,11 @@
       - ipset
       - ipvsadm
     state: present
+  when: 'INSTALL_SOURCE != "offline"'
+
+# 离线安装基础软件包
+- import_tasks: offline.yml
+  when: 'INSTALL_SOURCE == "offline"'
 
 # 优化设置 journal 日志相关，避免日志重复搜集，浪费系统资源
 - name: 准备 journal 日志相关目录
